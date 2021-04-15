@@ -1,5 +1,5 @@
 from __future__ import annotations
-from operation import Operation
+from model.operation import Operation
 from numpy import array
 
 

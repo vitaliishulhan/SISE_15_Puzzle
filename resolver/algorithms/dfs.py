@@ -1,7 +1,7 @@
-import sys
+from typing import Optional
 
-from state import State
-from operation import Operation
+from model.state import State
+from model.operation import Operation
 from getpath import get_path
 
 
@@ -21,7 +21,7 @@ def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     init = State(initial_state)
     front_tier.append(init)
 
-    def recursive_search(state: State, depth: int = 0):
+    def recursive_search(state: State, depth: int = 0) -> Optional[State]:
         explored.add(state)
         if depth == 20:
             if state.test():

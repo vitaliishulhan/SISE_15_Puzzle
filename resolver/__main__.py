@@ -1,8 +1,9 @@
 import glob
 
-from operation import Operation
-from bfs import bfs
-from dfs import dfs
+from model.operation import Operation
+from algorithms.astr import a_star
+from algorithms.metrics import *
+
 
 def read_tables(dirpath: str) -> list:
     files = glob.glob(f'{dirpath}/*.txt')
@@ -29,7 +30,7 @@ def read_tables(dirpath: str) -> list:
 
 
 if __name__ == "__main__":
-    tables = read_tables("./tables")
+    tables = read_tables("../tables")
 
     orders = [
         (Operation.R, Operation.D, Operation.U, Operation.L),
@@ -42,12 +43,14 @@ if __name__ == "__main__":
         (Operation.U, Operation.L, Operation.R, Operation.D)
     ]
 
-# for order in orders:
+    # for order in orders:
     print("ORDER:", *tuple(map(lambda o: o.name, orders[0])))
     for table in tables:
         print(table)
-        result = bfs(table[0], table[1],  # dimension
-                     table[2],  # init state
-                     tuple([i for i in range(1, table[0] * table[1])] + [0]),  # final state
-                     orders[0])  # operations_order
+        result = a_star(table[0], table[1],  # dimension
+                        table[2],  # init state
+                        tuple([i for i in range(1, table[0] * table[1])] + [0]),  # final state
+                        orders[0],  # operations_order
+                        get_manhattan_distance)
         print(result)
+        # break

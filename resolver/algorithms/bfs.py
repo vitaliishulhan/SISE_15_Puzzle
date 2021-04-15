@@ -1,5 +1,7 @@
-from state import State
-from operation import Operation
+from typing import Optional
+
+from model.state import State
+from model.operation import Operation
 from getpath import get_path
 
 
@@ -9,7 +11,6 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     if initial_state == goal_state:
         return ""
 
-
     explored: set = set()
 
     State.w = w
@@ -17,7 +18,7 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     State.goal_state = goal_state
     State.operations_order = operations_order
 
-    def recursive_search(state_list):
+    def recursive_search(state_list: list[State]) -> Optional[State]:
         if len(state_list) == 0:
             return None
 
@@ -34,6 +35,7 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
                     state.get_neighbours()
                 )
             )
+
         return recursive_search(neighbours)
 
     return get_path(recursive_search([State(initial_state)]))
