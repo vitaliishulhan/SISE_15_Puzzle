@@ -5,9 +5,6 @@ from model.operation import Operation
 from algorithms.getpath import get_path
 
 
-
-
-
 def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
         operations_order: tuple[Operation, Operation, Operation, Operation]) -> tuple[str, int, int, int]:
     if initial_state == goal_state:
@@ -23,26 +20,31 @@ def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
 
     init = State(initial_state)
     front_set.add(init)
-    front_set.add(init)
 
-    global_depth: int = 0
+    max_depth: int = 0
 
-    def recursive_search(state: State, depth: int = 0) -> tuple[Optional[State], int]:
-        nonlocal global_depth
-        if depth > global_depth:
-            global_depth = depth
-        front_set.remove(state)
-        explored.add(state)
+    def recursive_search(state: State) -> Optional[State]:
+        nonlocal max_depth
 
-        if depth == 20:
+        if max_depth < state.path_price:
+            max_depth = state.path_price
+
+        if state.path_price == 20:
             if state.test():
                 return state, 20
             else:
-                return None, 20
+                ns = state.get_neighbours()
+                for n in ns:
+                    if n.test():
+                        max_depth = 21
+                        return n
+                return None
+
+        explored.add(state)
 
         neighbours: tuple[State, ...] = tuple(
             filter(
-                lambda s: s not in explored and s not in front_set,
+                lambda s: s not in explored,
                 state.get_neighbours()
             )
         )
@@ -52,17 +54,18 @@ def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
 
         for neighbour in neighbours:
             if neighbour.test():
-                return neighbour, depth + 1
-            else:
-                some_state, returned_depth = recursive_search(neighbour, depth + 1)
-                if some_state is not None:
-                    return some_state, returned_depth
+                return neighbour
 
-        return None, depth
+        for neighbour in neighbours:
+            some_state = recursive_search(neighbour)
+            if some_state is not None:
+                return some_state
+
+        return None
 
     res = recursive_search(init)
 
-    return get_path(res[0]), max(res[1], global_depth), len(front_set) + len(explored), len(explored)
+    return get_path(res), max_depth, len(front_set), len(explored)
 
 
 

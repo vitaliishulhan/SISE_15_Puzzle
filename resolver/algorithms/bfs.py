@@ -10,7 +10,6 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     if initial_state == goal_state:
         return "", 0, 0, 0
 
-    front_tier: list[State, ...] = list()
     explored: set[State, ...] = set()
     front_set: set[State, ...] = set()
 
@@ -20,17 +19,21 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     State.operations_order = operations_order
 
     init = State(initial_state)
-    front_tier.append(init)
     front_set.add(init)
 
-    def recursive_search(state_list: list[State], depth: int = 0) -> tuple[Optional[State], int]:
+    max_depth = 0
+
+    def recursive_search(state_list: list[State, ...]) -> tuple[Optional[State], int]:
         if len(state_list) == 0:
-            return None, depth
+            return None
+
+        nonlocal max_depth
+        if max_depth < state_list[0].path_price:
+            max_depth = state_list[0].path_price
 
         all_neighbours: list[State, ...] = list()
 
         for state in state_list:
-            front_tier.remove(state)
             front_set.remove(state)
             explored.add(state)
 
@@ -42,17 +45,17 @@ def bfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
             )
 
             for neighbour in neighbours:
-                front_tier.append(neighbour)
                 front_set.add(neighbour)
 
             for neighbour in neighbours:
                 if neighbour.test():
-                    return neighbour, depth + 1
+                    max_depth = neighbour.path_price
+                    return neighbour
 
             all_neighbours.extend(neighbours)
 
-        return recursive_search(all_neighbours, depth + 1)
+        return recursive_search(all_neighbours)
 
     res = recursive_search([init])
 
-    return get_path(res[0]), res[1], len(front_set) + len(explored), len(explored)
+    return get_path(res), max_depth, len(front_set) + len(explored), len(explored)

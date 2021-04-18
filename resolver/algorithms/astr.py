@@ -17,7 +17,7 @@ def a_star(w: int, h: int,
     explored: set = set()
 
     init = State(initial_state)
-    front_set.add((init, 0))
+    front_set.add(init)
 
     def recursive_search(state_list: list[tuple[State, int], ...]) -> tuple[Optional[State], int]:
         if len(state_list) == 0:
@@ -27,9 +27,8 @@ def a_star(w: int, h: int,
 
         state = state_list[0]
 
-        front_set.remove(state)
         state_list.remove(state)
-        explored.add(state)
+        explored.add(state[0])
 
         if state[0].test():
             return state
@@ -47,7 +46,7 @@ def a_star(w: int, h: int,
         )
 
         for neighbour in neighbours:
-            front_set.add(neighbour)
+            front_set.add(neighbour[0])
 
         state_list.extend(neighbours)
         state_list.sort(key=lambda s: s[0].path_price + get_distance(s[0]))
@@ -56,4 +55,4 @@ def a_star(w: int, h: int,
 
     res = recursive_search([(init, 0)])
 
-    return get_path(res[0]), res[1], len(front_set) + len(explored), len(explored)
+    return get_path(res[0]), res[1], len(front_set), len(explored)

@@ -78,13 +78,14 @@ if __name__ == "__main__":
                               tuple([i for i in range(1, table[0] * table[1])] + [0]),
                               sec_arg)
 
-    print(result)
-
     with open(sys.argv[4], 'w') as file:
-        file.write(str(len(result[0])) + "\n" + result[0])
+        if result[0] != -1:
+            file.write(str(len(result[0])) + "\n" + result[0])
+        else:
+            file.write("-1")
 
     with open(sys.argv[5], 'w') as file:
-        file.write(str(len(result[0])) + "\n" +
+        file.write(("-1" if result[0] == -1 else str(len(result[0]))) + "\n" +
                    str(result[2]) + "\n" +
                    str(result[3]) + "\n" +
                    str(result[1]) + "\n" +
