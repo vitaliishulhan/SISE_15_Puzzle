@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from copy import deepcopy
+
 from model.operation import Operation
 from numpy import array
 
@@ -64,7 +67,18 @@ class State:
         if self.operations_order is None:
             raise ValueError("Operator order must be assigned before")
 
-        return tuple(filter(lambda state: state is not self, [self.make_operation(operation) for operation in self.operations_order]))
+        ops = list(deepcopy(self.operations_order))
+
+        if self.operation == Operation.L:
+            ops.remove(Operation.R)
+        elif self.operation == Operation.R:
+            ops.remove(Operation.L)
+        elif self.operation == Operation.U:
+            ops.remove(Operation.D)
+        elif self.operation == Operation.D:
+            ops.remove(Operation.U)
+
+        return tuple(filter(lambda state: state is not self, [self.make_operation(operation) for operation in ops]))
 
     def __eq__(self, other: State) -> bool:
         return self._table == other._table

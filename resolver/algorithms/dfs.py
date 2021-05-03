@@ -19,33 +19,28 @@ def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
     State.operations_order = operations_order
 
     init = State(initial_state)
-    front_set.add(init)
+    front_set.add((init, 0))
 
-    max_depth: int = 0
+    # max_depth: int = 0
 
-    def recursive_search(state: State) -> Optional[State]:
-        nonlocal max_depth
+    def recursive_search(state: tuple[State, int]) -> Optional[State]:
+        # nonlocal max_depth
 
-        if max_depth < state.path_price:
-            max_depth = state.path_price
+        # if max_depth < state[1]:
+        #     max_depth = state.path_price
 
-        if state.path_price == 20:
-            if state.test():
-                return state, 20
+        if state[1] == 20:
+            if state[0].test():
+                return state[0], 20
             else:
-                ns = state.get_neighbours()
-                for n in ns:
-                    if n.test():
-                        max_depth = 21
-                        return n
-                return None
+                return None, 20
 
         explored.add(state)
 
         neighbours: tuple[State, ...] = tuple(
             filter(
                 lambda s: s not in explored,
-                state.get_neighbours()
+                map(lambda item: (item, state[1] + 1), state[0].get_neighbours())
             )
         )
 
@@ -53,22 +48,16 @@ def dfs(w: int, h: int, initial_state: tuple, goal_state: tuple,
             front_set.add(neighbour)
 
         for neighbour in neighbours:
-            if neighbour.test():
+            if neighbour[0].test():
                 return neighbour
 
         for neighbour in neighbours:
             some_state = recursive_search(neighbour)
-            if some_state is not None:
+            if some_state[0] is not None:
                 return some_state
 
-        return None
+        return None, state[1]
 
-    res = recursive_search(init)
+    res = recursive_search((init, 0))
 
-    return get_path(res), max_depth, len(front_set), len(explored)
-
-
-
-
-
-
+    return get_path(res[0]), max(map(lambda item: item[1], front_set)), len(front_set), len(explored)
